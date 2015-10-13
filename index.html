@@ -11,6 +11,10 @@
 <a href="javascript:;" id="copytxt" style="display:inline-block;width:200px; height:100px;">点击复制</a>
 </div>
 <script>
+if(typeof console !='object'){
+	var console={};
+	console.log=function(obj){alert(obj);};
+	}
 window.onload=function(){
 	
 var conf={

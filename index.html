@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>flashcopy</title>
+<script src="copy.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div class="">
+<a href="javascript:;" id="copytxt" style="display:inline-block;width:200px; height:100px;">点击复制</a>
+</div>
+<script>
+window.onload=function(){
+	
+var conf={
+			path: 'copy.swf',
+			copy: null,
+			beforeCopy: null,
+			afterCopy: null,
+			clickAfter: true,
+			setHandCursor: true,
+			setCSSEffects: true
+			};
+flashcopy.setMoviePath(conf.path);
+window.clip = new flashcopy.Client(document.getElementById('copytxt'));	
+clip.setText('这个是最新的复制工具');
+clip.setSize(200,100);
+};
+
+
+//clip.setHandCursor(conf.setHandCursor);
+//clip.setCSSEffects(conf.setCSSEffects);
+</script>
+</body>
+</html>

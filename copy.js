@@ -69,15 +69,17 @@ var flashcopy = {
     },
 	init:function(elem){
 		if(!elem)return null;
-		return new flashcopy.Client(elem);
-		},
-    Client: function (elem) {
 		if(flashcopy.clients)
 		{
 			flashcopy.clients.init(elem);
+			//flashcopy.clients.reposition();
 			return flashcopy.clients;
-		}
-		this.handlers = {};
+		}else{
+			return new flashcopy.Client(elem);
+			}
+		
+		},
+    Client: function (elem) {
         this.movieId = 'flashcopyMovie_';// + this.id;
 		flashcopy.clients=this;
         // create movie
@@ -118,7 +120,7 @@ flashcopy.Client.prototype = {
         var style = this.div.style;
         style.position = 'absolute';
         style.left = '' + box.left + 'px';
-        style.top = '' + box.top + 'px';
+        style.top = '' + -1000 + 'px';
         style.width = '' + box.width + 'px';
         style.height = '' + box.height + 'px';
         style.zIndex = zIndex;
@@ -129,9 +131,12 @@ flashcopy.Client.prototype = {
     },
 	onCopy:function(o){
 		this.alias='flashcopy';
-		this.getText=o.setText;
-		this.success=o.success;
-		this.swfpath=o.swfpath;
+		this.elem.prototype={
+				onCopygetText:o.setText,
+				onCopysuccess:o.success
+			};
+//		this.getText=o.setText;
+//		this.success=o.success;
 		},
     getHTML: function (width, height) {
         // return HTML for movie
@@ -166,6 +171,7 @@ flashcopy.Client.prototype = {
     },
 
     reposition: function (elem) {
+		elem||(elel=this.elem);
         if (elem && this.div) {
             var box = flashcopy.getDOMObjectPosition(elem,this.div);
             var style = this.div.style;
@@ -180,7 +186,7 @@ flashcopy.Client.prototype = {
 //调用这个函数时相当于调用flash中的setText
     setText: function () {
         // set text to be copied to clipboard
-        this.clipText = this.getText(this.elem);
+        this.clipText = this.elem.prototype.onCopygetText(this.elem);
         if (this.ready) {
             this.movie.setText(this.clipText);
         }
@@ -240,7 +246,7 @@ flashcopy.Client.prototype = {
 			this.setText();
             break;
         case 'complete':
-			this.success(this.elem,this.clipText);
+			this.elem.prototype.onCopysuccess(this.elem,this.clipText);
             break;
         } // switch eventName
     }

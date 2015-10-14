@@ -8,9 +8,9 @@
 
 <body>
 <div class="">
-<a href="javascript:;" id="copytxt" style="display:inline-block;width:200px; height:100px;">点击复制</a>
+<a href="javascript:;" id="copytxt" style="display:inline-block;width:200px; height:100px;">点击复制1</a>
 
-<a href="javascript:;" id="copytxt2" style="display:inline-block;width:100px; height:100px;">点击复制</a>
+<a href="javascript:;" id="copytxt2" style="display:inline-block;width:100px; height:100px;">点击复制2</a>
 </div>
 <script>
 if(typeof console !='object'){
@@ -23,7 +23,7 @@ flashcopy.init('copytxt').onCopy({
 	swfpath:'copy.swf',
 	alias:'flashcopy',
 	setText:function(obj){
-		console.log('设置要复制的文字');
+		console.log('开始设置要复制的文字');
 		console.log(obj);
 		return '最新的复制工具';
 		},
@@ -42,6 +42,7 @@ flashcopy.init('copytxt2').onCopy({
 		return '最新的复制工具';
 		},
 	success:function(obj,args){
+		alert();
 		console.log(obj);
 		console.log('复制成功'+args);
 		}

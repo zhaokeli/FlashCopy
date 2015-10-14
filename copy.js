@@ -54,17 +54,9 @@ var FlashCopy = {
     getDOMObjectPosition: function (obj, stopObj) {
         // get absolute coordinates for dom element
         var info = {
-            left: 0,
-            top: 0,
             width: obj.width ? obj.width : obj.offsetWidth,
             height: obj.height ? obj.height : obj.offsetHeight
         };
-
-        if (obj && (obj != stopObj)) {
-			info.left += obj.offsetLeft;
-            info.top += obj.offsetTop;
-        }
-
         return info;
     },
 	init:function(elem){
@@ -99,15 +91,21 @@ FlashCopy.Client.prototype = {
 	init:function(elem){
 		var _this=this;
 		this.elem = FlashCopy.$(elem);
+		this.elem.style.position='relative';
 		this.elem.onmouseover=function(){
+			var s=_this.div.style;
+			s.top='0px';
+			s.display='';
+			this.appendChild(_this.div);
 			_this.elem=this;
 			_this.reposition(_this.elem);
 		};
+		
 		},
     glue: function (elem) {
 		
         this.init(elem);
-        var zIndex = 99;
+        var zIndex = 9999999999999;
         if (this.elem.style.zIndex) {
             zIndex = parseInt(this.elem.style.zIndex, 10) + 1;
         }
@@ -118,9 +116,9 @@ FlashCopy.Client.prototype = {
         this.div.id = "zclip-" + this.movieId;
        // $(this.elem).data('zclipId', 'zclip-' + this.movieId);
         var style = this.div.style;
+		style.display='none';
         style.position = 'absolute';
-        style.left = '' + box.left + 'px';
-        style.top = '' + -1000 + 'px';
+        style.left = 0+ 'px';
         style.width = '' + box.width + 'px';
         style.height = '' + box.height + 'px';
         style.zIndex = zIndex;
@@ -174,9 +172,6 @@ FlashCopy.Client.prototype = {
 		elem||(elel=this.elem);
         if (elem && this.div) {
             var box = FlashCopy.getDOMObjectPosition(elem,this.div);
-            var style = this.div.style;
-            style.left = '' + box.left + 'px';
-            style.top = '' + box.top + 'px';
         }
 		this.setSize(box.width,box.height);
  },

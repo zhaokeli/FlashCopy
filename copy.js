@@ -1,6 +1,6 @@
 (function(a){
 var FlashCopy = {
-    version: "1.0.7",
+    version: "1.0.0",
     clients:null,
     moviePath: '',
     $: function (elem) {

@@ -28,23 +28,9 @@
             button.useHandCursor = true;
             button.graphics.beginFill(13434624);
             button.graphics.drawRect(0, 0, stage.stageWidth,stage.stageHeight);
-            button.alpha = 0.5;
+            button.alpha = 0;
             addChild(button);
             button.addEventListener(MouseEvent.CLICK, clickHandler);
-            //button.addEventListener(MouseEvent.MOUSE_OVER, function (event:Event)
-            //{
-			//	//_this.console("移动到flash");
-            //    ExternalInterface.call(alias+".dispatch", id, "mouseOver", null);
-            //    return;
-            //}// end function
-            //);
-            //button.addEventListener(MouseEvent.MOUSE_OUT, function (event:Event)
-            //{
-			//	//_this.console("移出啦flash");
-            //    ExternalInterface.call(alias+".dispatch", id, "mouseOut", null);
-            //    return;
-            //}// end function
-            //);
             button.addEventListener(MouseEvent.MOUSE_DOWN, function (event:Event)
             {
 				//_this.console("单击啦flash");
@@ -52,14 +38,7 @@
                 return;
             }// end function
             );
-            //button.addEventListener(MouseEvent.MOUSE_UP, function (event:Event)
-            //{
-			//	//_this.console("抬起啦鼠标flash");
-            //    ExternalInterface.call(alias+".dispatch", id, "mouseUp", null);
-            //    return;
-            //}// end function
-            //);
-			
+
 			//映射js和flash中的函数对应
         //    ExternalInterface.addCallback("setHandCursor", setHandCursor);//设置光标
 			//调用浏览器setText设置文本到flash中的变量中
@@ -73,11 +52,6 @@
             return;
         }// end function
 
-        //public function setHandCursor(param1:Boolean)
-        //{
-        //    button.useHandCursor = param1;
-        //    return;
-        //}// end function
 
         private function clickHandler(event:Event) : void
         {

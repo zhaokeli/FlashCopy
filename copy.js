@@ -1,5 +1,5 @@
 (function(a){
-var flashcopy = {
+var FlashCopy = {
     version: "1.0.7",
     clients:null,
     moviePath: '',
@@ -69,27 +69,27 @@ var flashcopy = {
     },
 	init:function(elem){
 		if(!elem)return null;
-		if(flashcopy.clients)
+		if(FlashCopy.clients)
 		{
-			flashcopy.clients.init(elem);
-			//flashcopy.clients.reposition();
-			return flashcopy.clients;
+			FlashCopy.clients.init(elem);
+			//FlashCopy.clients.reposition();
+			return FlashCopy.clients;
 		}else{
-			return new flashcopy.Client(elem);
+			return new FlashCopy.Client(elem);
 			}
 		
 		},
     Client: function (elem) {
-        this.movieId = 'flashcopyMovie_';// + this.id;
-		flashcopy.clients=this;
+        this.movieId = 'FlashCopyMovie_';// + this.id;
+		FlashCopy.clients=this;
         // create movie
         if (elem) this.glue(elem);
     }
 };
 
-flashcopy.Client.prototype = {
+FlashCopy.Client.prototype = {
     //flash中调用js对象所用的名字
-    alias:'flashcopy',
+    alias:'FlashCopy',
 	elem:null,
 	div:null,
     ready: false,
@@ -98,7 +98,7 @@ flashcopy.Client.prototype = {
 	success:function(){},
 	init:function(elem){
 		var _this=this;
-		this.elem = flashcopy.$(elem);
+		this.elem = FlashCopy.$(elem);
 		this.elem.onmouseover=function(){
 			_this.elem=this;
 			_this.reposition(_this.elem);
@@ -112,7 +112,7 @@ flashcopy.Client.prototype = {
             zIndex = parseInt(this.elem.style.zIndex, 10) + 1;
         }
         var appendElem = document.getElementsByTagName('body')[0];
-        var box = flashcopy.getDOMObjectPosition(this.elem);
+        var box = FlashCopy.getDOMObjectPosition(this.elem);
         this.div = document.createElement('div');
         this.div.className = "zclip";
         this.div.id = "zclip-" + this.movieId;
@@ -130,7 +130,7 @@ flashcopy.Client.prototype = {
         this.div.innerHTML = this.getHTML(box.width,box.height);
     },
 	onCopy:function(o){
-		this.alias='flashcopy';
+		this.alias='FlashCopy';
 		this.elem.prototype={
 				onCopygetText:o.setText,
 				onCopysuccess:o.success
@@ -146,10 +146,10 @@ flashcopy.Client.prototype = {
         if (navigator.userAgent.match(/MSIE/)) {
             // IE gets an OBJECT tag
             var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
-            html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + flashcopy.moviePath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
+            html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + FlashCopy.moviePath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
         } else {
             // all other browsers get an EMBED tag
-            html += '<embed id="' + this.movieId + '" src="' + flashcopy.moviePath + '" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="' + width + '" height="' + height + '" name="' + this.movieId + '" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="' + flashvars + '" wmode="transparent" />';
+            html += '<embed id="' + this.movieId + '" src="' + FlashCopy.moviePath + '" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="' + width + '" height="' + height + '" name="' + this.movieId + '" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="' + flashvars + '" wmode="transparent" />';
         }
         return html;
     },
@@ -173,7 +173,7 @@ flashcopy.Client.prototype = {
     reposition: function (elem) {
 		elem||(elel=this.elem);
         if (elem && this.div) {
-            var box = flashcopy.getDOMObjectPosition(elem,this.div);
+            var box = FlashCopy.getDOMObjectPosition(elem,this.div);
             var style = this.div.style;
             style.left = '' + box.left + 'px';
             style.top = '' + box.top + 'px';
@@ -235,11 +235,9 @@ flashcopy.Client.prototype = {
             this.ready = true;
             try {
                 this.movie.setText(this.clipText);
-            } catch (e) {}
+            } catch (e) {alert('flash copy error');}
             try {
-            } catch (e) {}
-			
-			console.log('配置加载正常。。。');
+            } catch (e) {alert('flash copy error');}
             break;
 
         case 'mousedown':
@@ -252,6 +250,6 @@ flashcopy.Client.prototype = {
     }
 
 };	
-a.flashcopy=flashcopy;
+a.FlashCopy=FlashCopy;
 })(window);
 

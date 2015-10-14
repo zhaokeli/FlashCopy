@@ -14,11 +14,11 @@
 var flashcopy = {
 
     version: "1.0.7",
-    clients: {},
+    clients:null,
     // registered upload clients on page, indexed by id
     moviePath: 'copy.swf',
     // URL to movie
-    nextId: 1,
+   // nextId: 1,
     // ID of next movie
     $: function (elem) {
         // simple DOM lookup utility function
@@ -67,15 +67,15 @@ var flashcopy = {
 
     dispatch: function (id, eventName, args) {
         // receive event from flash movie, send to client		
-        var client = this.clients[id];
+        var client = this.clients;
         if (client) {
             client.receiveEvent(eventName, args);
         }
     },
 
-    register: function (id, client) {
+    register: function (client) {
         // register new client to receive events
-        this.clients[id] = client;
+        this.clients = client;
     },
 
     getDOMObjectPosition: function (obj, stopObj) {
@@ -97,14 +97,15 @@ var flashcopy = {
 
     Client: function (elem) {
         // constructor for new simple upload client
+		if(flashcopy.clients)return flashcopy.clients;
         this.handlers = {};
 
         // unique ID
-        this.id = flashcopy.nextId++;
-        this.movieId = 'flashcopyMovie_' + this.id;
+       // this.id = flashcopy.nextId++;
+        this.movieId = 'flashcopyMovie_';// + this.id;
 
         // register client with singleton to receive flash events
-        flashcopy.register(this.id, this);
+        flashcopy.register(this);
 
         // create movie
         if (elem) this.glue(elem);
@@ -130,9 +131,14 @@ flashcopy.Client.prototype = {
     handlers: null,
     // user event handlers
     glue: function (elem, appendElem, stylesToAdd) {
+		var _this=this;
         // glue to DOM element
         // elem can be ID or actual DOM element object
         this.domElement = flashcopy.$(elem);
+		
+			elem.onmouseover=function(){
+			_this.reposition(this);
+			};
 		//$(this.domElement).wrap('<span></span>');
         // float just above object, or zIndex 99 if dom element isn't set
         var zIndex = 99;
@@ -173,7 +179,7 @@ flashcopy.Client.prototype = {
     getHTML: function (width, height) {
         // return HTML for movie
         var html = '';
-        var flashvars = 'id=' + this.id + '&width=' + width + '&height=' + height+'&alias='+this.alias;
+        var flashvars = 'id=0&width=' + width + '&height=' + height+'&alias='+this.alias;
 
         if (navigator.userAgent.match(/MSIE/)) {
             // IE gets an OBJECT tag
@@ -229,6 +235,7 @@ flashcopy.Client.prototype = {
             style.left = '' + box.left + 'px';
             style.top = '' + box.top + 'px';
         }
+		this.setSize(style.width,style.height);
     },
 //调用这个函数时相当于调用flash中的setText
     setText: function (newText) {
@@ -277,6 +284,7 @@ flashcopy.Client.prototype = {
         // special behavior for certain events
         switch (eventName) {
         case 'load':
+			console.log('配置加载正常。。。');
             // movie claims it is ready, but in IE this isn't always the case...
             // bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
             this.movie = document.getElementById(this.movieId);

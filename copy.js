@@ -1,25 +1,8 @@
-/*
- * zClip :: jQuery flashcopy v1.1.1
- * http://steamdev.com/zclip
- *
- * Copyright 2011, SteamDev
- * Released under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
- *
- * Date: Wed Jun 01, 2011
- */
-// flashcopy
-// Simple Set Clipboard System
-// Author: Joseph Huckaby
+(function(a){
 var flashcopy = {
-
     version: "1.0.7",
     clients:null,
-    // registered upload clients on page, indexed by id
     moviePath: 'copy.swf',
-    // URL to movie
-   // nextId: 1,
-    // ID of next movie
     $: function (elem) {
         // simple DOM lookup utility function
         if (typeof(elem) == 'string') elem = document.getElementById(elem);
@@ -59,25 +42,15 @@ var flashcopy = {
         }
         return elem;
     },
-
     setMoviePath: function (path) {
         // set path to copy.swf
         this.moviePath = path;
     },
-
     dispatch: function (id, eventName, args) {
-        // receive event from flash movie, send to client		
-        var client = this.clients;
-        if (client) {
-            client.receiveEvent(eventName, args);
+        if (this.clients) {
+            this.clients.receiveEvent(eventName, args);
         }
     },
-
-    register: function (client) {
-        // register new client to receive events
-        this.clients = client;
-    },
-
     getDOMObjectPosition: function (obj, stopObj) {
         // get absolute coordinates for dom element
         var info = {
@@ -94,68 +67,55 @@ var flashcopy = {
 
         return info;
     },
-
+	init:function(elem){
+		if(!elem)return null;
+		return new flashcopy.Client(elem);
+		},
     Client: function (elem) {
-        // constructor for new simple upload client
-		if(flashcopy.clients)return flashcopy.clients;
-        this.handlers = {};
-
-        // unique ID
-       // this.id = flashcopy.nextId++;
+		if(flashcopy.clients)
+		{
+			flashcopy.clients.init(elem);
+			return flashcopy.clients;
+		}
+		this.handlers = {};
         this.movieId = 'flashcopyMovie_';// + this.id;
-
-        // register client with singleton to receive flash events
-        flashcopy.register(this);
-
+		flashcopy.clients=this;
         // create movie
         if (elem) this.glue(elem);
     }
 };
 
 flashcopy.Client.prototype = {
-
-    id: 0,
     //flash中调用js对象所用的名字
     alias:'flashcopy',
-    // unique ID for us
+	elem:null,
+	div:null,
     ready: false,
-    // whether movie is ready to receive events or not
     movie: null,
-    // reference to movie object
     clipText: '',
-    // text to copy to clipboard
-    handCursorEnabled: true,
-    // whether to show hand cursor, or default pointer cursor
-    cssEffects: true,
-    // enable CSS mouse effects on dom container
-    handlers: null,
-    // user event handlers
-    glue: function (elem, appendElem, stylesToAdd) {
+	swfpath:'',
+	success:function(){},
+	init:function(elem){
 		var _this=this;
-        // glue to DOM element
-        // elem can be ID or actual DOM element object
-        this.domElement = flashcopy.$(elem);
+		this.elem = flashcopy.$(elem);
+		this.elem.onmouseover=function(){
+			_this.elem=this;
+			_this.reposition(_this.elem);
+		};
+		},
+    glue: function (elem) {
 		
-			elem.onmouseover=function(){
-			_this.reposition(this);
-			};
-		//$(this.domElement).wrap('<span></span>');
-        // float just above object, or zIndex 99 if dom element isn't set
+        this.init(elem);
         var zIndex = 99;
-        if (this.domElement.style.zIndex) {
-            zIndex = parseInt(this.domElement.style.zIndex, 10) + 1;
+        if (this.elem.style.zIndex) {
+            zIndex = parseInt(this.elem.style.zIndex, 10) + 1;
         }
-
-        if (typeof(appendElem) == 'string') {
-            appendElem = flashcopy.$(appendElem);
-        } else if (typeof(appendElem) == 'undefined') {
-            appendElem = document.getElementsByTagName('body')[0];
-        }
-        var box = flashcopy.getDOMObjectPosition(this.domElement, appendElem);
+        var appendElem = document.getElementsByTagName('body')[0];
+        var box = flashcopy.getDOMObjectPosition(this.elem);
         this.div = document.createElement('div');
         this.div.className = "zclip";
         this.div.id = "zclip-" + this.movieId;
-       // $(this.domElement).data('zclipId', 'zclip-' + this.movieId);
+       // $(this.elem).data('zclipId', 'zclip-' + this.movieId);
         var style = this.div.style;
         style.position = 'absolute';
         style.left = '' + box.left + 'px';
@@ -163,19 +123,17 @@ flashcopy.Client.prototype = {
         style.width = '' + box.width + 'px';
         style.height = '' + box.height + 'px';
         style.zIndex = zIndex;
-
-        if (typeof(stylesToAdd) == 'object') {
-            for (addedStyle in stylesToAdd) {
-                style[addedStyle] = stylesToAdd[addedStyle];
-            }
-        }
-
         // style.backgroundColor = '#f00'; // debug
         appendElem.appendChild(this.div);
 
         this.div.innerHTML = this.getHTML(box.width,box.height);
     },
-
+	onCopy:function(o){
+		this.alias='flashcopy';
+		this.getText=o.setText;
+		this.success=o.success;
+		this.swfpath=o.swfpath;
+		},
     getHTML: function (width, height) {
         // return HTML for movie
         var html = '';
@@ -184,7 +142,7 @@ flashcopy.Client.prototype = {
         if (navigator.userAgent.match(/MSIE/)) {
             // IE gets an OBJECT tag
             var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
-            html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + flashcopy.moviePath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
+            html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + this.swfpath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
         } else {
             // all other browsers get an EMBED tag
             html += '<embed id="' + this.movieId + '" src="' + flashcopy.moviePath + '" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="' + width + '" height="' + height + '" name="' + this.movieId + '" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="' + flashvars + '" wmode="transparent" />';
@@ -192,22 +150,9 @@ flashcopy.Client.prototype = {
         return html;
     },
 
-    hide: function () {
-        // temporarily hide floater offscreen
-        if (this.div) {
-            this.div.style.left = '-2000px';
-        }
-    },
-
-    show: function () {
-        // show ourselves after a call to hide()
-        this.reposition();
-    },
-
     destroy: function () {
         // destroy control and floater
-        if (this.domElement && this.div) {
-            this.hide();
+        if (this.elem && this.div) {
             this.div.innerHTML = '';
 
             var body = document.getElementsByTagName('body')[0];
@@ -216,65 +161,41 @@ flashcopy.Client.prototype = {
             } catch (e) {;
             }
 
-            this.domElement = null;
+            this.elem = null;
             this.div = null;
         }
     },
 
     reposition: function (elem) {
-        // reposition our floating div, optionally to new container
-        // warning: container CANNOT change size, only position
-        if (elem) {
-            this.domElement = flashcopy.$(elem);
-            if (!this.domElement) this.hide();
-        }
-
-        if (this.domElement && this.div) {
-            var box = flashcopy.getDOMObjectPosition(this.domElement);
+        if (elem && this.div) {
+            var box = flashcopy.getDOMObjectPosition(elem,this.div);
             var style = this.div.style;
             style.left = '' + box.left + 'px';
             style.top = '' + box.top + 'px';
         }
-		this.setSize(style.width,style.height);
-    },
+		this.setSize(box.width,box.height);
+ },
+	getText:function(){
+		return '';
+		},
 //调用这个函数时相当于调用flash中的setText
-    setText: function (newText) {
+    setText: function () {
         // set text to be copied to clipboard
-        this.clipText = newText;
+        this.clipText = this.getText(this.elem);
         if (this.ready) {
-            this.movie.setText(newText);
+            this.movie.setText(this.clipText);
         }
     },
 //调用这个函数时相当于调用flash中的setText
     setSize: function (width,height) {
         // set text to be copied to clipboard
         if (this.ready) {
+			this.div.style.width=width+'px';
+			this.div.style.height=height+'px';
             this.movie.width=width;
             this.movie.height=height;
             //this.movie.setSize(width,height);
         }
-    },
-    addEventListener: function (eventName, func) {
-        // add user event listener for event
-        // event types: load, queueStart, fileStart, fileComplete, queueComplete, progress, error, cancel
-        eventName = eventName.toString().toLowerCase().replace(/^on/, '');
-        if (!this.handlers[eventName]) {
-            this.handlers[eventName] = [];
-        }
-        this.handlers[eventName].push(func);
-    },
-
-    setHandCursor: function (enabled) {
-        // enable hand cursor (true), or default arrow cursor (false)
-        this.handCursorEnabled = enabled;
-        if (this.ready) {
-            this.movie.setHandCursor(enabled);
-        }
-    },
-
-    setCSSEffects: function (enabled) {
-        // enable or disable CSS effects on DOM container
-        this.cssEffects = !! enabled;
     },
 
     receiveEvent: function (eventName, args) {
@@ -284,7 +205,6 @@ flashcopy.Client.prototype = {
         // special behavior for certain events
         switch (eventName) {
         case 'load':
-			console.log('配置加载正常。。。');
             // movie claims it is ready, but in IE this isn't always the case...
             // bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
             this.movie = document.getElementById(this.movieId);
@@ -293,6 +213,7 @@ flashcopy.Client.prototype = {
                 setTimeout(function () {
                     self.receiveEvent('load', null);
                 }, 1);
+				
                 return;
             }
 
@@ -311,66 +232,21 @@ flashcopy.Client.prototype = {
                 this.movie.setText(this.clipText);
             } catch (e) {}
             try {
-                this.movie.setHandCursor(this.handCursorEnabled);
             } catch (e) {}
-            break;
-
-        case 'mouseover':
-            if (this.domElement && this.cssEffects) {
-                this.domElement.addClass('hover');
-                if (this.recoverActive) {
-                    this.domElement.addClass('active');
-                }
-            }
-
-
-            break;
-
-        case 'mouseout':
-            if (this.domElement && this.cssEffects) {
-                this.recoverActive = false;
-                if (this.domElement.hasClass('active')) {
-                    this.domElement.removeClass('active');
-                    this.recoverActive = true;
-                }
-                this.domElement.removeClass('hover');
-
-            }
+			
+			console.log('配置加载正常。。。');
             break;
 
         case 'mousedown':
-            if (this.domElement && this.cssEffects) {
-                this.domElement.addClass('active');
-            }
-            break;
-
-        case 'mouseup':
-            if (this.domElement && this.cssEffects) {
-                this.domElement.removeClass('active');
-                this.recoverActive = false;
-            }
+			this.setText();
             break;
         case 'complete':
-            console.log('复制成功,剪切板内容为:'+args);
+			this.success(this.elem,this.clipText);
             break;
         } // switch eventName
-        if (this.handlers[eventName]) {
-            for (var idx = 0, len = this.handlers[eventName].length; idx < len; idx++) {
-                var func = this.handlers[eventName][idx];
-
-                if (typeof(func) == 'function') {
-                    // actual function reference
-                    func(this, args);
-                } else if ((typeof(func) == 'object') && (func.length == 2)) {
-                    // PHP style object + method, i.e. [myObject, 'myMethod']
-                    func[0][func[1]](this, args);
-                } else if (typeof(func) == 'string') {
-                    // name of function
-                    window[func](this, args);
-                }
-            } // foreach event handler defined
-        } // user defined handler for event
     }
 
 };	
+a.flashcopy=flashcopy;
+})(window);
 

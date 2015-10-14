@@ -20,7 +20,7 @@
             var flashvars:* = LoaderInfo(this.root.loaderInfo).parameters;
 			alias=flashvars.alias;
 			_this=this;
-			_this.console(flashvars);
+			//_this.console(flashvars);
             id = flashvars.id;
 			//_this.console(id);
             button = new Sprite();

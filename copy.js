@@ -20,41 +20,44 @@ var flashcopy = {
     // URL to movie
     nextId: 1,
     // ID of next movie
-    $: function (thingy) {
+    $: function (elem) {
         // simple DOM lookup utility function
-        if (typeof(thingy) == 'string') thingy = document.getElementById(thingy);
-        if (!thingy.addClass) {
+        if (typeof(elem) == 'string') elem = document.getElementById(elem);
+        if (!elem.addClass) {
             // extend element with a few useful methods
-            thingy.hide = function () {
-                this.style.display = 'none';
-            };
-            thingy.show = function () {
-                this.style.display = '';
-            };
-            thingy.addClass = function (name) {
-                this.removeClass(name);
-                this.className += ' ' + name;
-            };
-            thingy.removeClass = function (name) {
-                var classes = this.className.split(/\s+/);
-                var idx = -1;
-                for (var k = 0; k < classes.length; k++) {
-                    if (classes[k] == name) {
-                        idx = k;
-                        k = classes.length;
-                    }
-                }
-                if (idx > -1) {
-                    classes.splice(idx, 1);
-                    this.className = classes.join(' ');
-                }
-                return this;
-            };
-            thingy.hasClass = function (name) {
-                return !!this.className.match(new RegExp("\\s*" + name + "\\s*"));
-            };
+			elem.prototype={
+					hide : function () {
+						this.style.display = 'none';
+					},
+					show : function () {
+						this.style.display = '';
+					},
+					addClass : function (name) {
+						this.removeClass(name);
+						this.className += ' ' + name;
+					},
+					removeClass : function (name) {
+						var classes = this.className.split(/\s+/);
+						var idx = -1;
+						for (var k = 0; k < classes.length; k++) {
+							if (classes[k] == name) {
+								idx = k;
+								k = classes.length;
+							}
+						}
+						if (idx > -1) {
+							classes.splice(idx, 1);
+							this.className = classes.join(' ');
+						}
+						return this;
+					},
+					hasClass : function (name) {
+						return !!this.className.match(new RegExp("\\s*" + name + "\\s*"));
+					}				
+				};
+
         }
-        return thingy;
+        return elem;
     },
 
     setMoviePath: function (path) {

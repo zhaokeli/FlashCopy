@@ -1,4 +1,4 @@
-﻿package 
+﻿package
 {
     import flash.display.*;
     import flash.events.*;
@@ -44,9 +44,9 @@
 			//调用浏览器setText设置文本到flash中的变量中
             ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSize", setSize);
-			
-			
-			
+
+
+
 			//初始化时直接调用浏览器中js,并回调flash中对应的函数设置flash
             ExternalInterface.call(alias+".dispatch", id, "load", null);
             return;
@@ -71,7 +71,7 @@
 			return;
 			}
 		public function console(obj){
-			ExternalInterface.call("console.log",obj);			
+			ExternalInterface.call("console.log",obj);
 			}
 
     }

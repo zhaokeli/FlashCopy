@@ -230,7 +230,7 @@
                     try {
                         this.movie.setText(this.clipText);
                     } catch (e) {
-                       // alert('flash copy error');
+                        // alert('flash copy error');
                     }
                     try {} catch (e) {
                         //alert('flash copy error');

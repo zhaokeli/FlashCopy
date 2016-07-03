@@ -185,7 +185,7 @@
                 this.movie.setText(this.clipText);
             }
         },
-        //调用这个函数时相当于调用flash中的setText
+        //调用这个函数时相当于调用flash中的setSize
         setSize: function(width, height) {
             // set text to be copied to clipboard
             if (this.ready) {

@@ -3,11 +3,15 @@
         version: "1.0.0",
         clients: null,
         moviePath: '',
+        /**
+         * 查询元素
+         * @type {[type]}
+         */
         $: function(elem) {
-            // simple DOM lookup utility function
+
             if (typeof(elem) == 'string') elem = document.getElementById(elem);
+            //给元素扩展函数
             if (!elem.addClass) {
-                // extend element with a few useful methods
                 elem.prototype = {
                     hide: function() {
                         this.style.display = 'none';
@@ -42,17 +46,29 @@
             }
             return elem;
         },
+        //设置swf路径
         setSwfPath: function(path) {
-            // set path to copy.swf
             this.moviePath = path;
         },
+        /**
+         * 分配事件
+         * @param  id        索引id
+         * @param  eventName 事件名字
+         * @param  args      参数
+         * @return [description]
+         */
         dispatch: function(id, eventName, args) {
             if (this.clients) {
                 this.clients.receiveEvent(eventName, args);
             }
         },
+        /**
+         * 取元素的绝对位置
+         * @param  {[type]} obj     [description]
+         * @param  {[type]} stopObj [description]
+         * @return {[type]}         [description]
+         */
         getDOMObjectPosition: function(obj, stopObj) {
-            // get absolute coordinates for dom element
             var info = {
                 width: obj.width ? obj.width : obj.offsetWidth,
                 height: obj.height ? obj.height : obj.offsetHeight

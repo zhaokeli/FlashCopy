@@ -44,10 +44,16 @@ window.onload=function(){
 // 		console.log('复制成功'+args);
 // 		}
 // 	});
-FlashCopy.setCopy('copytxt',function(){
-return 'asdf1232423423432';
-},function(){
-console.log('copy ok');
+
+FlashCopy.setCopy({
+	domid:'copytxt',
+	getCopyText:function(){
+		console.log(' set 7;');
+		return '7777777777777';
+	},
+	copySuccess:function(){
+		console.log('copy ok');
+	}
 });
 };
 </script>

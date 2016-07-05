@@ -4,69 +4,53 @@
         alias: 'FlashCopy',
         movieId: 'flashcopyid',
         swfpath: '/copy.swf',
-        swf: null,
+        swfobj: null,
         divswf: null,
         ready: false, //flash是否创建好啦
+        activeDom: null,
+        eventList: [],
         /**
          * 查询元素
          * @type {[type]}
          */
         $: function(elem) {
 
-            if (typeof(elem) == 'string') elem = document.getElementById(elem);
-            //给元素扩展函数
-            if (!elem.addClass) {
-                elem.prototype = {
-                    hide: function() {
-                        this.style.display = 'none';
-                    },
-                    show: function() {
-                        this.style.display = '';
-                    },
-                    addClass: function(name) {
-                        this.removeClass(name);
-                        this.className += ' ' + name;
-                    },
-                    removeClass: function(name) {
-                        var classes = this.className.split(/\s+/);
-                        var idx = -1;
-                        for (var k = 0; k < classes.length; k++) {
-                            if (classes[k] == name) {
-                                idx = k;
-                                k = classes.length;
-                            }
-                        }
-                        if (idx > -1) {
-                            classes.splice(idx, 1);
-                            this.className = classes.join(' ');
-                        }
-                        return this;
-                    },
-                    hasClass: function(name) {
-                        return !!this.className.match(new RegExp("\\s*" + name + "\\s*"));
-                    }
-                };
-
+            if (typeof(elem) == 'string') {
+                elem = document.getElementById(elem);
             }
             return elem;
         },
-
-        setCopy: function(domid, copyText, success) {
-            this.copyText = copyText;
-            this.success = success;
+        // {
+        //     domid:'copytext',
+        //     getCopyText:function(){
+        //         return '7777777777777';
+        //     },
+        //     copySuccess:function(){
+        //         console.log('copy ok');
+        //     }
+        //}
+        setCopy: function(o) {
             var _t = this;
-            var dom = _t.$(domid);
-            _t.initSwf(dom);
-            dom.style.position = 'relative';
-            dom.onmouseover = function() {
-                // var s = _this.div.style;
-                // s.top = '0px';
-                // s.display = '';
-                dom.appendChild(_t.divswf);
-                //_t.divswf.display = 'block';
-                // _this.elem = this;
-                _t.reposition(dom);
+            var d = _t.$(o.domid);
+            if (!d) {
+                return false;
+            }
+            _t.initSwf(d);
+            d.style.position = 'relative';
+            // (function() {
+            var _tt = _t;
+            var dd = d;
+            dd.prototype = {
+                getCopyText: o.getCopyText,
+                copySuccess: o.copySuccess
             };
+
+            dd.onmouseover = function() {
+                _tt.activeDom = dd;
+                dd.appendChild(_tt.divswf);
+                _tt.reposition(d);
+            };
+            // })();
         },
 
         initSwf: function(dom) {
@@ -84,7 +68,7 @@
                     height: dom.height ? dom.height : dom.offsetHeight
                 };
                 this.divswf.innerHTML = this.getSwfHTML(box.width, box.height);
-                this.swf = _t.$(_t.movieId);
+                this.swfobj = _t.$(_t.movieId);
             }
         },
         getSwfHTML: function(width, height) {
@@ -116,8 +100,8 @@
             this.divswf.style.width = width + 'px';
             this.divswf.style.height = height + 'px';
             this.divswf.style.display = 'block';
-            this.swf.width = width;
-            this.swf.height = height;
+            this.swfobj.width = width;
+            this.swfobj.height = height;
 
         },
         /**
@@ -131,14 +115,14 @@
 
             this.receiveEvent(eventName, args);
         },
-        //复制成功回调
-        success: function() {
-            console.log('copy success');
-        },
-        //设置文本回调
-        copyText: function() {
-            return '';
-        },
+        // //复制成功回调
+        // success: function() {
+        //     console.log('copy success');
+        // },
+        // //设置文本回调
+        // copyText: function() {
+        //     return '';
+        // },
         receiveEvent: function(eventName, args) {
             // receive event from flash
             eventName = eventName.toString().toLowerCase().replace(/^on/, '');
@@ -151,7 +135,7 @@
                     // movie claims it is ready, but in IE this isn't always the case...
                     // bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
                     // this.movie = document.getElementById(this.movieId);
-                    if (!this.swf) {
+                    if (!this.swfobj) {
                         var self = this;
                         setTimeout(function() {
                             self.receiveEvent('load', null);
@@ -172,7 +156,7 @@
 
                     this.ready = true;
                     try {
-                        this.swf.setText(this.clipText);
+                        this.swfobj.setText(this.clipText);
                     } catch (e) {
                         // alert('flash copy error');
                     }
@@ -183,12 +167,13 @@
                     //在flash上按下鼠标时
                 case 'mousedown':
                     if (this.ready) {
-                        this.swf.setText(this.copyText());
+                        // this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                        this.swfobj.setText('9999999999999999');
                     }
                     break;
                     //复制完成
                 case 'complete':
-                    this.success();
+                    this.activeDom.prototype.copySuccess();
                     break;
             }
         }

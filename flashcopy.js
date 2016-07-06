@@ -9,7 +9,6 @@
         divswf: null,
         ready: false, //flash是否已经加载好啦
         activeDom: null,
-        eventList: [],
         /**
          * 查询元素
          * @type {[type]}
@@ -48,22 +47,18 @@
                 var dd = d;
                 dd.onmouseover = function() {
                     _tt.activeDom = dd;
-                    dd.appendChild(_tt.divswf);
+                    //dd.appendChild(_tt.divswf);
                     _tt.reposition(dd);
                 };
             })();
         },
-        // removeElement: function(_element) {
-        //     var _parentElement = _element.parentNode;
-        //     if (_parentElement) {
-        //         _parentElement.removeChild(_element);
-        //     }
-        // },
-
-        // resetSwf: function() {
-        //     this.removeElement(this.divswf);
-        //     this.initSwf(this.activeDom);
-        // },
+        getObjRect: function(id) {
+            var obj = this.$(id);
+            var ro = obj.getBoundingClientRect();
+            ro.Width = typeof ro.width || ro.Right - ro.Left;
+            ro.Height = ro.height || ro.Bottom - ro.Top;
+            return ro
+        },
         initSwf: function(dom) {
             var _t = this;
             if (!_t.divswf) {
@@ -71,7 +66,7 @@
                 var d = document.createElement('div');
                 d.className = "zclip";
                 d.id = "flashcopyzclip";
-                d.style.cssText = 'display:none;position:absolute;left:0px;top:0px;cursor:pointer;z-index:' + zIndex;
+                d.style.cssText = 'display:block;top:-10000000px;position:absolute;left:-100000px;cursor:pointer;z-index:' + zIndex;
                 document.getElementsByTagName('body')[0].appendChild(d);
                 _t.divswf = d;
                 var box = {
@@ -99,11 +94,13 @@
         },
         //移动swf到元素上面
         reposition: function(obj) {
-
             var box = {
                 width: obj.width ? obj.width : obj.offsetWidth,
                 height: obj.height ? obj.height : obj.offsetHeight
             };
+            var re = this.getObjRect(obj);
+            this.divswf.style.left = re.left + 'px';
+            this.divswf.style.top = re.top + 'px';
             this.setSize(box.width, box.height);
 
         },
@@ -158,13 +155,13 @@
                         this.ready = true;
                         return;
                     }
-                    //ie下直接设置
-                    try {
-                        this.swfobj.setText(this.activeDom.prototype.getCopyText());
-                    } catch (e) {
-                        // alert('flash copy error');
-                    }
-
+                    // //ie下直接设置
+                    // try {
+                    //     this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                    // } catch (e) {
+                    //     // alert('flash copy error');
+                    // }
+                    console.log('load ok');
                     this.ready = true;
                     break;
                     //在flash上按下鼠标时

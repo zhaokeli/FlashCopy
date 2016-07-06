@@ -7,7 +7,7 @@
         swfpath: '/copy.swf',
         swfobj: null,
         divswf: null,
-        ready: false, //flash是否创建好啦
+        ready: false, //flash是否已经加载好啦
         activeDom: null,
         eventList: [],
         /**

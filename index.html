@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>FlashCopy</title>
+<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 <script src="flashcopy.js" type="text/javascript"></script>
 </head>
 
@@ -17,7 +18,28 @@ if(typeof console !='object'){
 	var console={};
 	console.log=function(obj){alert(obj);};
 	}
-window.onload=function(){
+$(function(){
+FlashCopy.setCopy({
+	domid:'copytxt',
+	getCopyText:function(){
+		// console.log(' set 1;');
+		return '11111111111';
+	},
+	copySuccess:function(text){
+		console.log(text+' copy ok');
+	}
+});
+FlashCopy.setCopy({
+	domid:'copytxt2',
+	getCopyText:function(){
+		// console.log(' set 2;');
+		return '22222222222222';
+	},
+	copySuccess:function(text){
+		console.log(text+' copy ok');
+	}
+});
+});
 // FlashCopy.setSwfPath('copy.swf');
 // FlashCopy.init('copytxt').onCopy({
 // 	alias:'FlashCopy',
@@ -45,17 +67,9 @@ window.onload=function(){
 // 		}
 // 	});
 
-FlashCopy.setCopy({
-	domid:'copytxt',
-	getCopyText:function(){
-		console.log(' set 7;');
-		return '7777777777777';
-	},
-	copySuccess:function(){
-		console.log('copy ok');
-	}
-});
-};
+
+
 </script>
+<!-- <OBJECT style="VERTICAL-ALIGN: top" id=flashcopyid codeBase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" classid=clsid:d27cdb6e-ae6d-11cf-96b8-444553540000 width=200 align=middle height=100><PARAM NAME="_cx" VALUE="5080"><PARAM NAME="_cy" VALUE="5080"><PARAM NAME="FlashVars" VALUE="id=0&amp;width=200&amp;height=100&amp;alias=FlashCopy"><PARAM NAME="Movie" VALUE="/copy.swf"><PARAM NAME="Src" VALUE="/copy.swf"><PARAM NAME="WMode" VALUE="Transparent"><PARAM NAME="Play" VALUE="-1"><PARAM NAME="Loop" VALUE="0"><PARAM NAME="Quality" VALUE="High"><PARAM NAME="SAlign" VALUE=""><PARAM NAME="Menu" VALUE="0"><PARAM NAME="Base" VALUE=""><PARAM NAME="AllowScriptAccess" VALUE="always"><PARAM NAME="Scale" VALUE="ShowAll"><PARAM NAME="DeviceFont" VALUE="0"><PARAM NAME="EmbedMovie" VALUE="0"><PARAM NAME="BGColor" VALUE="FFFFFF"><PARAM NAME="SWRemote" VALUE=""><PARAM NAME="MovieData" VALUE=""><PARAM NAME="SeamlessTabbing" VALUE="1"><PARAM NAME="Profile" VALUE="0"><PARAM NAME="ProfileAddress" VALUE=""><PARAM NAME="ProfilePort" VALUE="0"><PARAM NAME="AllowNetworking" VALUE="all"><PARAM NAME="AllowFullScreen" VALUE="false"><PARAM NAME="AllowFullScreenInteractive" VALUE="false"><PARAM NAME="IsDependent" VALUE="0"><PARAM NAME="BrowserZoom" VALUE="scale"></OBJECT> -->
 </body>
 </html>

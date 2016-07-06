@@ -1,4 +1,5 @@
 ! function(a) {
+    "use strict";
     var b = {
         //flash中调用js对象所用的名字要和导出到window的一样
         alias: 'FlashCopy',
@@ -35,22 +36,22 @@
             if (!d) {
                 return false;
             }
-            _t.initSwf(d);
-            d.style.position = 'relative';
-            // (function() {
-            var _tt = _t;
-            var dd = d;
-            dd.prototype = {
+            d.prototype = {
                 getCopyText: o.getCopyText,
                 copySuccess: o.copySuccess
             };
-
-            dd.onmouseover = function() {
-                _tt.activeDom = dd;
-                dd.appendChild(_tt.divswf);
-                _tt.reposition(d);
-            };
-            // })();
+            _t.initSwf(d);
+            d.style.position = 'relative';
+            //下面使用闭包,保证每个元素有独立的事件
+            (function() {
+                var _tt = _t;
+                var dd = d;
+                dd.onmouseover = function() {
+                    _tt.activeDom = dd;
+                    dd.appendChild(_tt.divswf);
+                    _tt.reposition(dd);
+                };
+            })();
         },
 
         initSwf: function(dom) {
@@ -60,7 +61,7 @@
                 var d = document.createElement('div');
                 d.className = "zclip";
                 d.id = "flashcopyzclip";
-                d.style = 'display:none;position:absolute;left:0px;top:0px;zIndex:' + zIndex;
+                d.style.cssText = 'display:none;position:absolute;left:0px;top:0px;cursor:pointer;z-index:' + zIndex;
                 document.getElementsByTagName('body')[0].appendChild(d);
                 _t.divswf = d;
                 var box = {
@@ -79,7 +80,7 @@
             if (navigator.userAgent.match(/MSIE/)) {
                 // IE gets an OBJECT tag
                 var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
-                html += '<object style="vertical-align: top;"  classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + this.swfpath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
+                html += '<object style="vertical-align: top;"  classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + this.swfpath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
             } else {
                 // all other browsers get an EMBED tag
                 html += '<embed style="vertical-align: top;" id="' + this.movieId + '" src="' + this.swfpath + '" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="' + width + '" height="' + height + '" name="' + this.movieId + '" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="' + flashvars + '" wmode="transparent" />';
@@ -88,11 +89,13 @@
         },
         //移动swf到元素上面
         reposition: function(obj) {
+
             var box = {
                 width: obj.width ? obj.width : obj.offsetWidth,
                 height: obj.height ? obj.height : obj.offsetHeight
             };
             this.setSize(box.width, box.height);
+
         },
         setSize: function(width, height) {
             // set text to be copied to clipboard
@@ -102,6 +105,8 @@
             this.divswf.style.display = 'block';
             this.swfobj.width = width;
             this.swfobj.height = height;
+            (typeof this.swfobj.setSwfSize == 'function') && this.swfobj.setSwfSize(width, height);
+
 
         },
         /**
@@ -115,19 +120,9 @@
 
             this.receiveEvent(eventName, args);
         },
-        // //复制成功回调
-        // success: function() {
-        //     console.log('copy success');
-        // },
-        // //设置文本回调
-        // copyText: function() {
-        //     return '';
-        // },
         receiveEvent: function(eventName, args) {
             // receive event from flash
             eventName = eventName.toString().toLowerCase().replace(/^on/, '');
-
-            // special behavior for certain events
             switch (eventName) {
 
                 //保证flash创建完成
@@ -155,25 +150,21 @@
                     }
 
                     this.ready = true;
-                    try {
-                        this.swfobj.setText(this.clipText);
-                    } catch (e) {
-                        // alert('flash copy error');
-                    }
-                    try {} catch (e) {
-                        //alert('flash copy error');
-                    }
                     break;
                     //在flash上按下鼠标时
                 case 'mousedown':
                     if (this.ready) {
-                        // this.swfobj.setText(this.activeDom.prototype.getCopyText());
-                        this.swfobj.setText('9999999999999999');
+                        this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                        // this.swfobj.setText('9999999999999999');
                     }
+                    break;
+                case 'mousemove':
+                    this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                    // console.log('flash mousemove');
                     break;
                     //复制完成
                 case 'complete':
-                    this.activeDom.prototype.copySuccess();
+                    this.activeDom.prototype.copySuccess(args);
                     break;
             }
         }

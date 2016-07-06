@@ -53,7 +53,17 @@
                 };
             })();
         },
+        // removeElement: function(_element) {
+        //     var _parentElement = _element.parentNode;
+        //     if (_parentElement) {
+        //         _parentElement.removeChild(_element);
+        //     }
+        // },
 
+        // resetSwf: function() {
+        //     this.removeElement(this.divswf);
+        //     this.initSwf(this.activeDom);
+        // },
         initSwf: function(dom) {
             var _t = this;
             if (!_t.divswf) {
@@ -80,7 +90,7 @@
             if (navigator.userAgent.match(/MSIE/)) {
                 // IE gets an OBJECT tag
                 var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
-                html += '<object style="vertical-align: top;"  classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + this.swfpath + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
+                html += '<object style="vertical-align: top;"  classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="' + protocol + 'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="' + width + '" height="' + height + '" id="' + this.movieId + '" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + this.swfpath + '?' + Math.random() + '" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="' + flashvars + '"/><param name="wmode" value="transparent"/></object>';
             } else {
                 // all other browsers get an EMBED tag
                 html += '<embed style="vertical-align: top;" id="' + this.movieId + '" src="' + this.swfpath + '" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="' + width + '" height="' + height + '" name="' + this.movieId + '" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="' + flashvars + '" wmode="transparent" />';
@@ -117,8 +127,8 @@
          * @return [description]
          */
         dispatch: function(id, eventName, args) {
-
             this.receiveEvent(eventName, args);
+            // console.log(this.swfobj.setText);
         },
         receiveEvent: function(eventName, args) {
             // receive event from flash
@@ -148,18 +158,30 @@
                         this.ready = true;
                         return;
                     }
+                    //ie下直接设置
+                    try {
+                        this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                    } catch (e) {
+                        // alert('flash copy error');
+                    }
 
                     this.ready = true;
                     break;
                     //在flash上按下鼠标时
                 case 'mousedown':
                     if (this.ready) {
-                        this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                        if (typeof(this.swfobj.setText) == 'undefined') {
+                            console.log('this.swfobj.setText undefined');
+                        } else {
+
+                            this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                        }
                         // this.swfobj.setText('9999999999999999');
                     }
                     break;
                 case 'mousemove':
-                    this.swfobj.setText(this.activeDom.prototype.getCopyText());
+
+                    this.ready && this.swfobj.setText(this.activeDom.prototype.getCopyText());
                     // console.log('flash mousemove');
                     break;
                     //复制完成

@@ -25,7 +25,6 @@
             id = flashvars.id;
 			//_this.console(id);
             button = new Sprite();
-			
             button.buttonMode = true;
             button.useHandCursor = true;
 			//按钮背景色
@@ -37,6 +36,7 @@
             button.addEventListener(MouseEvent.MOUSE_MOVE,function (event:Event)
             {
 				//console('Flash msg:flash mouseIng!');
+				//trace('mouse move');
                 ExternalInterface.call(alias+".dispatch", id, "mouseMove", null);
 				
                 return;
@@ -45,6 +45,8 @@
             button.addEventListener(MouseEvent.MOUSE_DOWN, function (event:Event)
             {
 				console("单击啦flash");
+				//System.setClipboard(clipText);
+				//trace('mouse_down copyed:'+clipText);
                 ExternalInterface.call(alias+".dispatch", id, "mouseDown", null);
                 return;
             }
@@ -57,6 +59,7 @@
 			ExternalInterface.addCallback("setSwfSize", setSwfSize);
 			//初始化时直接调用浏览器中js,并回调flash中对应的函数设置flash
             ExternalInterface.call(alias+".dispatch", id, "load", null);
+			trace('flash load');
 			console('Flash msg:flash copy load ok!');
 	}catch(e){
 		console(e);
@@ -68,6 +71,7 @@
         private function clickHandler(event:Event) : void
         {
             System.setClipboard(clipText);
+			trace('mouse_click copyed:'+clipText);
             ExternalInterface.call(alias+".dispatch", id, "complete", clipText);
             return;
         }
@@ -75,6 +79,7 @@
         public function setText(param1)
         {
 			//console('set flash clip text!'+param1);
+			trace('set copytext:'+param1);
             clipText = param1;
             return;
         }

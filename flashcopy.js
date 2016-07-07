@@ -89,6 +89,15 @@
         getObjRect: function(id) {
             return this.$(id).getBoundingClientRect();
         },
+        getScrollTop: function() {
+            var scrollTop = 0;
+            if (document.documentElement && document.documentElement.scrollTop) {
+                scrollTop = document.documentElement.scrollTop;
+            } else if (document.body) {
+                scrollTop = document.body.scrollTop;
+            }
+            return scrollTop;
+        },
         /**
          * 取元素的宽高
          * @param  {[type]} dom [description]
@@ -135,7 +144,7 @@
             var box = this.getWH(dom);
             var re = this.getObjRect(dom);
             this.divswf.style.left = re.left + 'px';
-            this.divswf.style.top = re.top + 'px';
+            this.divswf.style.top = re.top + this.getScrollTop() + 'px';
             this.setSize(box.width, box.height);
 
         },

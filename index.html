@@ -17,7 +17,7 @@
 if(typeof console !='object'){
 	var console={};
 	console.log=function(obj){
-		//alert(obj);
+		alert(obj);
 	};
 	}
 $(function(){
@@ -25,7 +25,7 @@ FlashCopy.setCopy({
 	domid:'copytxt',
 	getCopyText:function(){
 		// console.log(' set 1;');
-		return '11111111111';
+		return '这是第一个要复制的数据';
 	},
 	copySuccess:function(text){
 		console.log(text+' copy ok');
@@ -35,7 +35,7 @@ FlashCopy.setCopy({
 	domid:'copytxt2',
 	getCopyText:function(){
 		// console.log(' set 2;');
-		return '22222222222222';
+		return '这是第二个要复制的数据';
 	},
 	copySuccess:function(text){
 		console.log(text+' copy ok');

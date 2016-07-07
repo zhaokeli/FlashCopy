@@ -55,8 +55,8 @@
         getObjRect: function(id) {
             var obj = this.$(id);
             var ro = obj.getBoundingClientRect();
-            ro.Width = typeof ro.width || ro.Right - ro.Left;
-            ro.Height = ro.height || ro.Bottom - ro.Top;
+            //ro.Width = ro.width || ro.Right - ro.Left;
+            //ro.Height = ro.height || ro.Bottom - ro.Top;
             return ro
         },
         initSwf: function(dom) {

@@ -22,7 +22,7 @@
 			alias=flashvars.alias;
 			_this=this;
 			//_this.console(flashvars);
-            id = flashvars.id;
+            //id = flashvars.id;
 			//_this.console(id);
             button = new Sprite();
             button.buttonMode = true;
@@ -32,25 +32,30 @@
             button.graphics.drawRect(0, 0, stage.stageWidth,stage.stageHeight);
             button.alpha = 0;
             addChild(button);
-		   button.addEventListener(MouseEvent.CLICK, clickHandler);
-            button.addEventListener(MouseEvent.MOUSE_MOVE,function (event:Event)
+		  // button.addEventListener(MouseEvent.CLICK, clickHandler);
+            button.addEventListener(MouseEvent.CLICK, function (event:Event)
             {
-				//console('Flash msg:flash mouseIng!');
-				//trace('mouse move');
-                ExternalInterface.call(alias+".dispatch", id, "mouseMove", null);
+            System.setClipboard(clipText);
+            ExternalInterface.call(alias+".dispatch", "complete", clipText);
+            });
 
-                return;
-            }
-            );
+            button.addEventListener(MouseEvent.MOUSE_OUT, function (event:Event)
+            {
+                ExternalInterface.call(alias+".dispatch", "mouseOut", null);
+            });
+            button.addEventListener(MouseEvent.MOUSE_MOVE, function (event:Event)
+            {
+                ExternalInterface.call(alias+".dispatch", "mouseMove", null);
+            });
+            button.addEventListener(MouseEvent.MOUSE_OVER, function (event:Event)
+            {
+                ExternalInterface.call(alias+".dispatch", "mouseOver", null);
+            });
             button.addEventListener(MouseEvent.MOUSE_DOWN, function (event:Event)
             {
-				//console("单击啦flash");
-				//System.setClipboard(clipText);
-				//trace('mouse_down copyed:'+clipText);
-                ExternalInterface.call(alias+".dispatch", id, "mouseDown", null);
-                return;
-            }
-            );
+                ExternalInterface.call(alias+".dispatch", "mouseDown", null);
+            });
+
 	try{
 			//映射js和flash中的函数对应
         //    ExternalInterface.addCallback("setHandCursor", setHandCursor);//设置光标
@@ -58,21 +63,12 @@
             ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSwfSize", setSwfSize);
 			//初始化时直接调用浏览器中js,并回调flash中对应的函数设置flash
-            ExternalInterface.call(alias+".dispatch", id, "load", null);
+            ExternalInterface.call(alias+".dispatch", "load", null);
 			//trace('flash load');
 			//console('Flash msg:flash copy load ok!');
 	}catch(e){
 		//console(e);
 		}
-            return;
-        }
-
-		//复制文本
-        private function clickHandler(event:Event) : void
-        {
-            System.setClipboard(clipText);
-			//trace('mouse_click copyed:'+clipText);
-            ExternalInterface.call(alias+".dispatch", id, "complete", clipText);
             return;
         }
 		//先设置要复制的文本

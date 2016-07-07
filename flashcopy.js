@@ -1,3 +1,13 @@
+/**
+ * **************************
+ * FlashCopy
+ * blog:http:www.zhaokeli.com
+ * v1.0.0
+ * author:zhaokeli
+ *****************************
+ *swf文件和flashcopy.js文件放在同一个目录
+ *引入flashcopy.js就可以swf文件会自动加载
+ */
 ! function(a) {
     "use strict";
     var b = {
@@ -5,9 +15,9 @@
         alias: 'FlashCopy',
         movieId: 'flashcopyid',
         swfpath: function() {
-            var a = document.scripts;
-            var b = a[a.length - 1];
-            var c = b.src;
+            var a = document.scripts,
+                b = a[a.length - 1],
+                c = b.src;
             return c.substring(0, c.lastIndexOf("/") + 1);
         }() + 'flashcopy.swf',
         swfobj: null,
@@ -20,11 +30,7 @@
          * @type {[type]}
          */
         $: function(elem) {
-
-            if (typeof(elem) == 'string') {
-                elem = document.getElementById(elem);
-            }
-            return elem;
+            return (typeof(elem) == 'string') ? document.getElementById(elem) : elem;
         },
         // {
         //     domid:'copytext',
@@ -35,6 +41,28 @@
         //         console.log('copy ok');
         //     }
         //}
+        addClass: function(dom, name) {
+            this.removeClass(dom, name);
+            dom.className += ' ' + name;
+        },
+        removeClass: function(dom, name) {
+            var classes = dom.className.split(/\s+/);
+            var idx = -1;
+            for (var k = 0; k < classes.length; k++) {
+                if (classes[k] == name) {
+                    idx = k;
+                    k = classes.length;
+                }
+            }
+            if (idx > -1) {
+                classes.splice(idx, 1);
+                dom.className = classes.join(' ');
+            }
+            return dom;
+        },
+        hasClass: function(dom, name) {
+            return !!dom.className.match(new RegExp("\\s*" + name + "\\s*"));
+        },
         setCopy: function(o) {
             var _t = this;
             var d = _t.$(o.domid);
@@ -45,6 +73,7 @@
                 getCopyText: o.getCopyText,
                 copySuccess: o.copySuccess
             };
+
             _t.initSwf(d);
             d.style.position = 'relative';
             //下面使用闭包,保证每个元素有独立的事件
@@ -53,17 +82,23 @@
                 var dd = d;
                 dd.onmouseover = function() {
                     _tt.activeDom = dd;
-                    //dd.appendChild(_tt.divswf);
                     _tt.reposition(dd);
                 };
             })();
         },
         getObjRect: function(id) {
-            var obj = this.$(id);
-            var ro = obj.getBoundingClientRect();
-            //ro.Width = ro.width || ro.Right - ro.Left;
-            //ro.Height = ro.height || ro.Bottom - ro.Top;
-            return ro
+            return this.$(id).getBoundingClientRect();
+        },
+        /**
+         * 取元素的宽高
+         * @param  {[type]} dom [description]
+         * @return {[type]}     [description]
+         */
+        getWH: function(dom) {
+            return {
+                width: dom.width ? dom.width : dom.offsetWidth,
+                height: dom.height ? dom.height : dom.offsetHeight
+            };
         },
         initSwf: function(dom) {
             var _t = this;
@@ -75,10 +110,7 @@
                 d.style.cssText = 'display:block;top:-10000000px;position:absolute;left:-100000px;cursor:pointer;z-index:' + zIndex;
                 document.getElementsByTagName('body')[0].appendChild(d);
                 _t.divswf = d;
-                var box = {
-                    width: dom.width ? dom.width : dom.offsetWidth,
-                    height: dom.height ? dom.height : dom.offsetHeight
-                };
+                var box = _t.getWH(dom);
                 this.divswf.innerHTML = this.getSwfHTML(box.width, box.height);
                 this.swfobj = _t.$(_t.movieId);
             }
@@ -99,12 +131,9 @@
             return html;
         },
         //移动swf到元素上面
-        reposition: function(obj) {
-            var box = {
-                width: obj.width ? obj.width : obj.offsetWidth,
-                height: obj.height ? obj.height : obj.offsetHeight
-            };
-            var re = this.getObjRect(obj);
+        reposition: function(dom) {
+            var box = this.getWH(dom);
+            var re = this.getObjRect(dom);
             this.divswf.style.left = re.left + 'px';
             this.divswf.style.top = re.top + 'px';
             this.setSize(box.width, box.height);
@@ -129,7 +158,7 @@
          * @param  args      参数
          * @return [description]
          */
-        dispatch: function(id, eventName, args) {
+        dispatch: function(eventName, args) {
             this.receiveEvent(eventName, args);
             // console.log(this.swfobj.setText);
         },
@@ -140,9 +169,6 @@
 
                 //保证flash创建完成
                 case 'load':
-                    // movie claims it is ready, but in IE this isn't always the case...
-                    // bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
-                    // this.movie = document.getElementById(this.movieId);
                     if (!this.swfobj) {
                         var self = this;
                         setTimeout(function() {
@@ -151,7 +177,6 @@
 
                         return;
                     }
-
                     // firefox on pc needs a "kick" in order to set these in certain cases
                     if (!this.ready && navigator.userAgent.match(/Firefox/) && navigator.userAgent.match(/Windows/)) {
                         var self = this;
@@ -161,13 +186,6 @@
                         this.ready = true;
                         return;
                     }
-                    // //ie下直接设置
-                    // try {
-                    //     this.swfobj.setText(this.activeDom.prototype.getCopyText());
-                    // } catch (e) {
-                    //     // alert('flash copy error');
-                    // }
-                    //console.log('load ok');
                     this.ready = true;
                     break;
                     //在flash上按下鼠标时
@@ -177,19 +195,28 @@
                             //console.log('this.swfobj.setText undefined');
                         } else {
 
-                            this.swfobj.setText(this.activeDom.prototype.getCopyText());
+                            this.swfobj.setText(this.activeDom.prototype.getCopyText(this.activeDom));
                         }
-                        // this.swfobj.setText('9999999999999999');
                     }
                     break;
+                    //鼠标在flash上移动时调用
                 case 'mousemove':
-
-                    this.ready && this.swfobj.setText(this.activeDom.prototype.getCopyText());
-                    // console.log('flash mousemove');
+                    // console.log('mousemove');
                     break;
-                    //复制完成
+                    //鼠标放在flash上面时调用
+                case 'mouseover':
+                    // console.log('mouseover');
+                    this.addClass(this.activeDom, 'hover');
+                    //this.ready && this.swfobj.setText(this.activeDom.prototype.getCopyText(this.activeDom));
+                    break;
+                    //鼠标离开flash时调用
+                case 'mouseout':
+                    // console.log('mouseout');
+                    this.removeClass(this.activeDom, 'hover');
+                    break;
+                    //复制完成时调用
                 case 'complete':
-                    this.activeDom.prototype.copySuccess(args);
+                    this.activeDom.prototype.copySuccess(this.activeDom, args);
                     break;
             }
         }

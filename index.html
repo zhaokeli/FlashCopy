@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <title>FlashCopy</title>
-<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 <script src="flashcopy.js" type="text/javascript"></script>
 </head>
-
+	<style>
+.btn{background: #5cb85c; color: #fff;display:inline-block;text-decoration: none;}
+.btn.hover{ background: #8ee68e; box-shadow: 2px 2px 6px #ccc;}
+	</style>
 <body>
 <div class="">
-<a href="javascript:;" id="copytxt" style="display:inline-block;width:200px; height:100px;">点击复制1</a>
+<a href="javascript:;" id="copytxt" class="btn" style="width:200px; height:100px;">点击复制1</a>
 
-<a href="javascript:;" id="copytxt2" style="display:inline-block;width:100px; height:100px;">点击复制2</a>
+<a href="javascript:;" class="btn" id="copytxt2" style="width:100px; height:100px;">点击复制2</a>
 </div>
 <script>
 if(typeof console !='object'){
@@ -20,28 +22,33 @@ if(typeof console !='object'){
 		alert(obj);
 	};
 	}
-$(function(){
-FlashCopy.setCopy({
-	domid:'copytxt',
-	getCopyText:function(){
-		// console.log(' set 1;');
-		return '这是第一个要复制的数据';
-	},
-	copySuccess:function(text){
-		console.log(text+' copy ok');
-	}
-});
-FlashCopy.setCopy({
-	domid:'copytxt2',
-	getCopyText:function(){
-		// console.log(' set 2;');
-		return '这是第二个要复制的数据';
-	},
-	copySuccess:function(text){
-		console.log(text+' copy ok');
-	}
-});
-});
+window.onload=function(){
+	FlashCopy.setCopy({
+		domid:'copytxt',
+		getCopyText:function(dom){
+			// console.log(' set 1;');
+			console.log(dom);
+			return '这是第一个要复制的数据';
+		},
+		copySuccess:function(dom,text){
+			console.log(dom);
+			console.log(text+' copy ok');
+		}
+	});
+	FlashCopy.setCopy({
+		domid:'copytxt2',//绑定要点击复制的按钮
+		getCopyText:function(dom){
+			console.log(dom);
+			// 在这里返回要复制的值
+			return '这是第二个要复制的数据';
+		},
+		copySuccess:function(dom,text){
+			console.log(dom);
+			//复制成功后会调用参数为调用的文本
+			console.log(text+' copy ok');
+		}
+	});
+};
 
 
 </script>

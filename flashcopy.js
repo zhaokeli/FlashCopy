@@ -4,11 +4,17 @@
         //flash中调用js对象所用的名字要和导出到window的一样
         alias: 'FlashCopy',
         movieId: 'flashcopyid',
-        swfpath: '/copy.swf',
+        swfpath: function() {
+            var a = document.scripts;
+            var b = a[a.length - 1];
+            var c = b.src;
+            return c.substring(0, c.lastIndexOf("/") + 1);
+        }() + 'flashcopy.swf',
         swfobj: null,
         divswf: null,
         ready: false, //flash是否已经加载好啦
         activeDom: null,
+
         /**
          * 查询元素
          * @type {[type]}
@@ -161,14 +167,14 @@
                     // } catch (e) {
                     //     // alert('flash copy error');
                     // }
-                    console.log('load ok');
+                    //console.log('load ok');
                     this.ready = true;
                     break;
                     //在flash上按下鼠标时
                 case 'mousedown':
                     if (this.ready) {
                         if (typeof(this.swfobj.setText) == 'undefined') {
-                            console.log('this.swfobj.setText undefined');
+                            //console.log('this.swfobj.setText undefined');
                         } else {
 
                             this.swfobj.setText(this.activeDom.prototype.getCopyText());

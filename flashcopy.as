@@ -38,13 +38,13 @@
 				//console('Flash msg:flash mouseIng!');
 				//trace('mouse move');
                 ExternalInterface.call(alias+".dispatch", id, "mouseMove", null);
-				
+
                 return;
             }
             );
             button.addEventListener(MouseEvent.MOUSE_DOWN, function (event:Event)
             {
-				console("单击啦flash");
+				//console("单击啦flash");
 				//System.setClipboard(clipText);
 				//trace('mouse_down copyed:'+clipText);
                 ExternalInterface.call(alias+".dispatch", id, "mouseDown", null);
@@ -59,10 +59,10 @@
 			ExternalInterface.addCallback("setSwfSize", setSwfSize);
 			//初始化时直接调用浏览器中js,并回调flash中对应的函数设置flash
             ExternalInterface.call(alias+".dispatch", id, "load", null);
-			trace('flash load');
-			console('Flash msg:flash copy load ok!');
+			//trace('flash load');
+			//console('Flash msg:flash copy load ok!');
 	}catch(e){
-		console(e);
+		//console(e);
 		}
             return;
         }
@@ -71,7 +71,7 @@
         private function clickHandler(event:Event) : void
         {
             System.setClipboard(clipText);
-			trace('mouse_click copyed:'+clipText);
+			//trace('mouse_click copyed:'+clipText);
             ExternalInterface.call(alias+".dispatch", id, "complete", clipText);
             return;
         }
@@ -79,21 +79,21 @@
         public function setText(param1)
         {
 			//console('set flash clip text!'+param1);
-			trace('set copytext:'+param1);
+			//trace('set copytext:'+param1);
             clipText = param1;
             return;
         }
-		//设置按钮大小 
+		//设置按钮大小
 		public function setSwfSize(param1:Number,param2:Number):void{
-			console('reset button size!'+param1+''+param2);
+			//console('reset button size!'+param1+''+param2);
 			button.width=param1;
 			button.height=param2;
 			return;
 			}
 		//调试输出信息
-		public function console(obj){
+	//	public function console(obj){
 			//ExternalInterface.call("console.log",obj);
-			}
+	//		}
 
     }
 }

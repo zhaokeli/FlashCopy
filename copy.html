@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>标题</title>
+<meta name="keywords" content="关键字" />
+<meta name="description" content="描述" />
+</head>
+<body>
+
+<h5>献给我我可爱的胖子</h5>
+<p>
+  <button class="copy">Copy</button>
+</p>
+<p>
+  <textarea id="copytext" cols="50" rows="10" placeholder="在这里写下要复制的字">这是要复制的文字</textarea>
+</p>
+
+<script>
+
+  var copyBtn = document.querySelector('.copy')
+
+  // 点击的时候调用 copyTextToClipboard() 方法就好了.
+  copyBtn.onclick = function() {
+    copyTextToClipboard(document.getElementById('copytext').value);
+  }
+
+  function copyTextToClipboard(text) {
+    var ta = document.createElement("textarea")
+
+    ta.style.position = 'fixed'
+    ta.style.top = 0
+    ta.style.left = 0
+    ta.style.width = '2em'
+    ta.style.height = '2em'
+    ta.style.padding = 0
+    ta.style.border = 'none'
+    ta.style.outline = 'none'
+    ta.style.boxShadow = 'none'
+    ta.style.background = 'transparent'
+    ta.value = text
+    document.body.appendChild(ta)
+    ta.select()
+    try {
+      var msg = document.execCommand('copy') ? '成功' : '失败'
+      console.log('复制内容 ' + msg)
+    } catch (err) {
+      console.log('不能使用这种方法复制内容')
+    }
+
+    document.body.removeChild(ta)
+}
+
+</script>
+
+</body>
+</html>

@@ -11,6 +11,7 @@
 ! function(a) {
     "use strict";
     var b = {
+        ish5: false,
         //flash中调用js对象所用的名字要和导出到window的一样
         alias: 'FlashCopy',
         movieId: 'flashcopyid',
@@ -228,8 +229,51 @@
                     this.activeDom.prototype.copySuccess(this.activeDom, args);
                     break;
             }
-        }
+        },
+        //html5复制
+        copyTextToClipboard: function(text) {
+            var ta = document.createElement("textarea")
+            ta.style.position = 'fixed'
+            ta.style.top = 0
+            ta.style.left = 0
+            ta.style.width = '2em'
+            ta.style.height = '2em'
+            ta.style.padding = 0
+            ta.style.border = 'none'
+            ta.style.outline = 'none'
+            ta.style.boxShadow = 'none'
+            ta.style.background = 'transparent'
+            ta.value = text
+            document.body.appendChild(ta)
+            ta.select()
+            try {
+                var msg = document.execCommand('copy') ? '成功' : '失败'
+                document.body.removeChild(ta)
+                console.log('复制内容 ' + msg)
+                return true;
+            } catch (err) {
+                document.body.removeChild(ta)
+                console.log('不能使用这种方法复制内容')
+                return false;
+            }
 
+
+            //             function t(e) {
+            //     var t = getSelection();
+            //     t.removeAllRanges();
+            //     var i = document.createRange();
+            //     i.selectNodeContents(e),
+            //     t.addRange(i),
+            //     document.execCommand("copy"),
+            //     t.removeAllRanges()
+            // }
+            //     function n(e) {
+            //     e.select(),
+            //     document.execCommand("copy"),
+            //     getSelection().removeAllRanges()
+            // }
+        }
     };
+    b.ish5 = b.copyTextToClipboard('');
     a.FlashCopy = b;
 }(window);

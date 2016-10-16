@@ -74,13 +74,19 @@
             }
             d.prototype = {
                 getCopyText: o.getCopyText,
-                copySuccess: o.copySuccess
+                copySuccess: o.copySuccess,
+                copyFail: o.copyFail
             };
             if (_t.ish5) {
                 d.onclick = function() {
                     var tex = d.prototype.getCopyText(d);
-                    _t.copyTextToClipboard(tex);
-                    d.prototype.copySuccess(d, tex);
+                    var msg = _t.copyTextToClipboard(tex);
+                    if (msg) {
+                        d.prototype.copySuccess(d, tex);
+                    } else {
+                        d.prototype.copyFail(d, tex);
+                    }
+
                 }
                 return true;
             }
@@ -256,31 +262,14 @@
             document.body.appendChild(ta)
             ta.select()
             try {
-                var msg = document.execCommand('copy') ? '成功' : '失败'
+                var msg = document.execCommand('copy');
                 document.body.removeChild(ta)
-                    // console.log('复制内容 ' + msg)
-                return true;
+                return msg;
             } catch (err) {
                 document.body.removeChild(ta)
                 alert('不能使用这种方法复制内容')
                 return false;
             }
-
-
-            //             function t(e) {
-            //     var t = getSelection();
-            //     t.removeAllRanges();
-            //     var i = document.createRange();
-            //     i.selectNodeContents(e),
-            //     t.addRange(i),
-            //     document.execCommand("copy"),
-            //     t.removeAllRanges()
-            // }
-            //     function n(e) {
-            //     e.select(),
-            //     document.execCommand("copy"),
-            //     getSelection().removeAllRanges()
-            // }
         }
     };
     // b.ish5 = b.copyTextToClipboard('');

@@ -33,6 +33,10 @@ window.onload=function(){
 		copySuccess:function(dom,text){
 			console.log(dom);
 			console.log(text+' copy ok');
+		},
+		copyFail:function(dom,text){
+			console.log(dom);
+			console.log(text+' copy fail');
 		}
 	});
 	FlashCopy.setCopy({
@@ -46,6 +50,10 @@ window.onload=function(){
 			console.log(dom);
 			//复制成功后会调用参数为调用的文本
 			console.log(text+' copy ok');
+		},
+		copyFail:function(dom,text){
+			console.log(dom);
+			console.log(text+' copy fail');
 		}
 	});
 };

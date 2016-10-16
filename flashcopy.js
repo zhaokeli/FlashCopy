@@ -11,7 +11,9 @@
 ! function(a) {
     "use strict";
     var b = {
-        ish5: false,
+        ish5: function() {
+            return document.execCommand ? true : false;
+        }(),
         //flash中调用js对象所用的名字要和导出到window的一样
         alias: 'FlashCopy',
         movieId: 'flashcopyid',
@@ -74,7 +76,14 @@
                 getCopyText: o.getCopyText,
                 copySuccess: o.copySuccess
             };
-
+            if (_t.ish5) {
+                d.onclick = function() {
+                    var tex = d.prototype.getCopyText(d);
+                    _t.copyTextToClipboard(tex);
+                    d.prototype.copySuccess(d, tex);
+                }
+                return true;
+            }
             _t.initSwf(d);
             d.style.position = 'relative';
             //下面使用闭包,保证每个元素有独立的事件
@@ -249,11 +258,11 @@
             try {
                 var msg = document.execCommand('copy') ? '成功' : '失败'
                 document.body.removeChild(ta)
-                console.log('复制内容 ' + msg)
+                    // console.log('复制内容 ' + msg)
                 return true;
             } catch (err) {
                 document.body.removeChild(ta)
-                console.log('不能使用这种方法复制内容')
+                alert('不能使用这种方法复制内容')
                 return false;
             }
 
@@ -274,6 +283,6 @@
             // }
         }
     };
-    b.ish5 = b.copyTextToClipboard('');
+    // b.ish5 = b.copyTextToClipboard('');
     a.FlashCopy = b;
 }(window);

@@ -82,9 +82,10 @@
                     var tex = d.prototype.getCopyText(d);
                     var msg = _t.copyTextToClipboard(tex);
                     if (msg) {
-                        d.prototype.copySuccess(d, tex);
+                        typeof d.prototype.copySuccess == 'function' && d.prototype.copySuccess(d, tex);
                     } else {
-                        d.prototype.copyFail(d, tex);
+                        typeof d.prototype.copyFail == 'function' && d.prototype.copyFail(d, tex);
+
                     }
 
                 }
